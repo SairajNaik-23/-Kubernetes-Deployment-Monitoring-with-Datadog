@@ -5,7 +5,7 @@ A containerized Python app deployed on **Kubernetes** using **Deployments, Servi
 ![Kubernetes](https://img.shields.io/badge/Orchestration-Kubernetes-326CE5) ![Docker](https://img.shields.io/badge/Container-Docker-2496ED) ![Datadog](https://img.shields.io/badge/Monitoring-Datadog-632CA6) ![Helm](https://img.shields.io/badge/Package-Helm-0F1689)
 
 ---
-
+ 
 ## Architecture
 
 ```mermaid
