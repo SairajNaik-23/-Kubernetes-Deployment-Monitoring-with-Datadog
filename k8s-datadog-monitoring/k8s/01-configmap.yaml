@@ -1,0 +1,10 @@
+# ConfigMap = non-sensitive settings. Change config without rebuilding the image.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo-app-config
+  namespace: demo-app
+data:
+  APP_ENV: "dev"
+  LOG_LEVEL: "INFO"
+  APP_MESSAGE: "Hello from Kubernetes, monitored by Datadog!"

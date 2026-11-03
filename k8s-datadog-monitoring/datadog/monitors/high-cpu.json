@@ -1,0 +1,12 @@
+{
+  "name": "[demo-app] High CPU usage on pod {{pod_name.name}}",
+  "type": "metric alert",
+  "query": "avg(last_5m):avg:kubernetes.cpu.usage.total{kube_namespace:demo-app} by {pod_name} > 250000000",
+  "message": "Pod {{pod_name.name}} is using more than 0.25 CPU cores for 5 minutes.\nCheck: kubectl top pods -n demo-app\n@your-email@example.com",
+  "tags": ["service:demo-app", "env:dev", "team:devops"],
+  "options": {
+    "thresholds": { "critical": 250000000, "warning": 200000000 },
+    "notify_no_data": false,
+    "renotify_interval": 30
+  }
+}

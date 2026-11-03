@@ -1,0 +1,11 @@
+{
+  "name": "[demo-app] Deployment has unavailable replicas",
+  "type": "query alert",
+  "query": "max(last_5m):max:kubernetes_state.deployment.replicas_unavailable{kube_namespace:demo-app} by {kube_deployment} > 0",
+  "message": "Deployment {{kube_deployment.name}} has pods that are not ready for 5 minutes.\nCheck: kubectl get pods -n demo-app and kubectl get events -n demo-app\n@your-email@example.com",
+  "tags": ["service:demo-app", "env:dev", "team:devops"],
+  "options": {
+    "thresholds": { "critical": 0 },
+    "notify_no_data": false
+  }
+}

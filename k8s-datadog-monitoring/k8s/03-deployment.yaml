@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app
+  namespace: demo-app
+  labels:
+    app: demo-app
+    # Datadog unified service tagging -> metrics, logs and traces share env/service/version
+    tags.datadoghq.com/env: dev
+    tags.datadoghq.com/service: demo-app
+    tags.datadoghq.com/version: "1.0.0"
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: demo-app
+  template:
+    metadata:
+      labels:
+        app: demo-app
+        tags.datadoghq.com/env: dev
+        tags.datadoghq.com/service: demo-app
+        tags.datadoghq.com/version: "1.0.0"
+      annotations:
+        # Tell the Datadog Agent how to tag this container's logs
+        ad.datadoghq.com/demo-app.logs: '[{"source": "python", "service": "demo-app"}]'
+    spec:
+      containers:
+        - name: demo-app
+          image: your-dockerhub-username/k8s-datadog-demo:1.0.0   # <-- change
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          # All ConfigMap keys become environment variables
+          envFrom:
+            - configMapRef:
+                name: demo-app-config
+          env:
+            # Single key from the Secret
+            - name: API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: demo-app-secret
+                  key: API_TOKEN
+            # Where to send traces/custom metrics: the Datadog Agent on the same node
+            - name: DD_AGENT_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: DD_ENV
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/env']
+            - name: DD_SERVICE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/service']
+            - name: DD_VERSION
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/version']
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000   # matches the appuser UID in the Dockerfile
+            allowPrivilegeEscalation: false

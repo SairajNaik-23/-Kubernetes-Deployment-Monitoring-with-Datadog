@@ -1,0 +1,11 @@
+{
+  "name": "[demo-app] Pod restarting (possible CrashLoopBackOff)",
+  "type": "query alert",
+  "query": "change(max(last_10m),last_10m):sum:kubernetes_state.container.restarts{kube_namespace:demo-app} by {pod_name} > 3",
+  "message": "Pod {{pod_name.name}} restarted more than 3 times in 10 minutes.\nCheck: kubectl describe pod {{pod_name.name}} -n demo-app and kubectl logs --previous\n@your-email@example.com",
+  "tags": ["service:demo-app", "env:dev", "team:devops"],
+  "options": {
+    "thresholds": { "critical": 3 },
+    "notify_no_data": false
+  }
+}

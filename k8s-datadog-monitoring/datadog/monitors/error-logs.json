@@ -1,0 +1,12 @@
+{
+  "name": "[demo-app] High number of error logs",
+  "type": "log alert",
+  "query": "logs(\"service:demo-app status:error\").index(\"*\").rollup(\"count\").last(\"5m\") > 20",
+  "message": "demo-app wrote more than 20 error logs in 5 minutes.\nOpen Datadog Logs and filter service:demo-app status:error.\n@your-email@example.com",
+  "tags": ["service:demo-app", "env:dev", "team:devops"],
+  "options": {
+    "thresholds": { "critical": 20 },
+    "enable_logs_sample": true,
+    "notify_no_data": false
+  }
+}

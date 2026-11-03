@@ -1,0 +1,32 @@
+# Datadog Agent Helm values.
+# Agent = DaemonSet (one pod per node) collecting node, container and app data.
+# Cluster Agent = one deployment that talks to the K8s API for cluster-level data.
+datadog:
+  site: datadoghq.com                    # or datadoghq.eu, us5.datadoghq.com ...
+  apiKeyExistingSecret: datadog-secret   # created by scripts/install-datadog.sh
+  clusterName: k8s-datadog-demo
+
+  tags:
+    - "env:dev"
+    - "team:devops"
+
+  logs:
+    enabled: true
+    containerCollectAll: true
+
+  apm:
+    portEnabled: true                    # Agent listens on hostPort 8126 for traces
+
+  processAgent:
+    enabled: true
+    processCollection: true
+
+  kubeStateMetricsCore:
+    enabled: true                        # deployments, pods, restarts, HPA metrics
+
+  # Minikube/kind kubelets use self-signed certs
+  kubelet:
+    tlsVerify: false
+
+clusterAgent:
+  enabled: true
